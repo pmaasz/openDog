@@ -107,7 +107,7 @@ double leg(double Z4, double Y4, double X4, double yaw, double pitch2, double ro
             if (side == 1) {
               X4 = X4 + (BODYRODX + HIPROD);
             }
-
+            /** @todo possibly should be in an if else if block? needs to be tested */
             if (side == 0) {
               X4 = X4 - (BODYRODX + HIPROD);
             }
@@ -300,6 +300,7 @@ double leg(double Z4, double Y4, double X4, double yaw, double pitch2, double ro
                 mydata_back.elbowL = elbowActuator;
             }
 
+            /** @todo remove redundant code */
             // constrain data so we don't run the actuator end stops
             mydata_front.shoulderR = constrain(mydata_front.shoulderR, 110,200);
             mydata_front.shoulderL = constrain(mydata_front.shoulderL, 110,200);
