@@ -1,7 +1,6 @@
 // ****** Interpolation functions **************
 
 int interpolationZ(int input, int duration) {
-    static int interpolationFlag = 0;  
     static int savedValue;
 
     // check for new data
@@ -17,7 +16,6 @@ int interpolationZ(int input, int duration) {
 }
 
 int interpolationY(int input, int duration) {
-    static int interpolationFlag = 0;
     static int savedValue;
 
     // check for new data
@@ -32,7 +30,6 @@ int interpolationY(int input, int duration) {
 }
 
 int interpolationX(int input, int duration) {
-    static int interpolationFlag = 0;
     static int savedValue;
 
     // check for new data
