@@ -1,4 +1,5 @@
 // ****** Interpolation functions **************
+/** @todo remove redundant code */
 
 int interpolationZ(int input, int duration) {
     static int savedValue;
