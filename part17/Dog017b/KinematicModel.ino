@@ -1,4 +1,4 @@
-// *********************** Kinematic model fuction ******************************************
+// *********************** Kinematic model function ******************************************
 
 
 double leg(double Z4, double Y4, double X4, double yaw, double pitch2, double roll, int side, int front) {
@@ -7,13 +7,13 @@ double leg(double Z4, double Y4, double X4, double yaw, double pitch2, double ro
             #define HIPROD 118L           // offset from hip pivot to middle of leg
             #define HIPROD2 263L          // diagonal length from hip pivot to fixed actuator pivot 
             #define HIPROD3 150L          // length of hip actuator pivot 
-            #define HIPOFFSETANGLE 32L    // DEGREES angle of diagnonal between hip pivot and actuator pivot
+            #define HIPOFFSETANGLE 32L    // DEGREES angle of diagonal between hip pivot and actuator pivot
             double X;                     // X once offsets and inversion are taken ito account
             double X2;                    // X after yaw moves;
             double X3;                    // X at the roll calc stage  
-            double Y;                     // Y to give to XYZ calcs
+            double Y;                     // Y to give to XYZ calculations
             double Y2;                    // Y after yaw moves
-            double Z;                     // Z to give to XYZ cals
+            double Z;                     // Z to give to XYZ calculations
             double Z2;                    // Z after yaw moves
             double Z3;                     // Z at the roll calc stage
             double hipHypotenuse;         // the length between hip pivot and foot
@@ -50,8 +50,8 @@ double leg(double Z4, double Y4, double X4, double yaw, double pitch2, double ro
             double shoulderAngle;     // initial demand for shoulder (half elbow angle plus offset for moving the leg
             double shoulderAngle2;    // RADIANS - the actual angle we need from the shoulder actuator
             double shoulderAngle2a;   // DEGREES - the actual angle we need from the shoulder actuator
-            double shoulderAngle3;    // RADIANS - first ancgle to solve
-            double shoulderAngle3a;   // DEGREES - first ancgle to solve
+            double shoulderAngle3;    // RADIANS - first angle to solve
+            double shoulderAngle3a;   // DEGREES - first angle to solve
             double shoulderAngle4;    // RADIANS - second angle to solve
             double shoulderAngle4a;    // Degrees - second angle to solve
             double shoulderActuator;  // actual output length of actuator
@@ -73,9 +73,9 @@ double leg(double Z4, double Y4, double X4, double yaw, double pitch2, double ro
 
             // Roll consts and vars - end view
             #define BODYRODX 110L     // half the distance from hip pivot to hip pivot in the X axis
-            double differenceZ2;      // difference in height between the centre point and new hip neight, in an X axis
+            double differenceZ2;      // difference in height between the centre point and new hip height, in an X axis
             double hipHeight;         // resulting new height of hip from ground as the tits in roll, in a vertical line from the ground
-            double legLength3;        // the new ***length of the VIRTUAL leg*** we need to calulate the new Y and Z
+            double legLength3;        // the new ***length of the VIRTUAL leg*** we need to calculate the new Y and Z
             double distanceX;         // the new distance from the centre to the hip joint, taking into account the roll angle
             double differenceX;       // the difference between foot placement and the new distance from the centre to the hip joint
             double hipAngle5;         // RADIANS the angle of the *VIRTUAL leg* from vertical
@@ -85,8 +85,8 @@ double leg(double Z4, double Y4, double X4, double yaw, double pitch2, double ro
 
             // Yaw consts and vars - top view
             double radius;            // radius/hypotenuse of triangle of leg from top XY view
-            double yawAngle1;         // RADIANS - the origin angle of the radius using existing stick posotions
-            double yawAngle1a;        // DEGREES - the origin angle of the radius using existing stick posotions
+            double yawAngle1;         // RADIANS - the origin angle of the radius using existing stick positions
+            double yawAngle1a;        // DEGREES - the origin angle of the radius using existing stick positions
             double yawAngle2;         // RADIANS - the new demand angle of the radius 
             double yawAngle2a;        // DEGREES - the new demand angle of the radius 
 
@@ -100,18 +100,21 @@ double leg(double Z4, double Y4, double X4, double yaw, double pitch2, double ro
 
             if (front == 1) {
               Y4 = Y4 + BODYRODY;
-            }
-            else if (front == 0) {
+            } else if (front == 0) {
               Y4 = Y4 - BODYRODY;
             }
+
             if (side == 1) {
               X4 = X4 + (BODYRODX + HIPROD);
             }
+
             if (side == 0) {
               X4 = X4 - (BODYRODX + HIPROD);
             }
 
-            yaw = (yaw * 71) / 4068;                // convert to RADIANS
+            // **************** Yaw calculations **********************************************
+
+            yaw = degreesToRadians(yaw);                // convert to RADIANS
 
             yawAngle1 = atan(X4/Y4);                  // calc existing angle of leg from centre
             yawAngle1a = (yawAngle1 * 4068) / 71;   // DEGREES - for debug            
@@ -124,40 +127,37 @@ double leg(double Z4, double Y4, double X4, double yaw, double pitch2, double ro
             X2 = radius * sin(yawAngle2);           // calc new X and Y based on new yaw angle
             Y2 = radius * cos(yawAngle2);
   
-            if (front == 1) {                       // remnove offsets again to give results centred around zero
+            if (front == 1) {                       // remove offsets again to give results centred around zero
               Y2 = Y2 - BODYRODY;
-            }
-            else if (front == 0) {
+            } else if (front == 0) {
               Y2 = Y2 + BODYRODY;
             }
+
             if (side == 1) {
               X2 = X2 - (BODYRODX + HIPROD);
-            }
-            else if (side == 0){
+            } else if (side == 0){
               X2 = X2 + (BODYRODX + HIPROD);
             }   
 
-            Z2 = Z4;                              // pass through Z as it isn't needed in yaw calcs
+            Z2 = Z4;                              // pass through Z as it isn't needed in yaw calculations
                      
             // switch round X and roll for each side of the robot
             if (side == 1) {                                      //right leg
               X3 = HIPROD+X2;                                       
-            }
-            else if (side == 0) {                                 //left leg
+            } else if (side == 0) {                                 //left leg
               X3 = HIPROD-X2; 
             }
 
             // switch around pitch angle for back or front of robot
             if (front == 1) {                                     // front of robot
               pitch = pitch2*-1;
-            }
-            else if (front == 0) {                                // back of robot
+            } else if (front == 0) {                                // back of robot
               pitch = pitch2;
             }            
 
-            // **************** Pitch calcs **********************************************
+            // **************** Pitch calculations **********************************************
 
-            pitch = (pitch * 71) / 4068;                        // convert pitch to RADIANS
+            pitch = degreesToRadians(pitch);                        // convert pitch to RADIANS
             differenceZ = sin(pitch) * BODYRODY;                // calc opposite side of triangle
             distanceY = cos(pitch) * BODYRODY;                  // calc adjacent side of triangle
 
@@ -168,7 +168,7 @@ double leg(double Z4, double Y4, double X4, double yaw, double pitch2, double ro
               differenceY = differenceY*-1;
             }
 
-            shoulderAngle5 = atan(differenceY/shoulderHeight);    // RADIANS angle between leg and vetical
+            shoulderAngle5 = atan(differenceY/shoulderHeight);    // RADIANS angle between leg and vertical
             shoulderAngle5a = (shoulderAngle5 * 4068) / 71;      // DEGREES convert for debug
             legLength2 = shoulderHeight/cos(shoulderAngle5);      // calc out new length of leg
             
@@ -181,12 +181,12 @@ double leg(double Z4, double Y4, double X4, double yaw, double pitch2, double ro
 
             shoulderAngle6a = (shoulderAngle6 * 4068) / 71;      // DEGREES convert for debug
 
-            Z3 = legLength2*cos(shoulderAngle6);                  // new Z to pass on to roll calcs
-            Y = legLength2*sin(shoulderAngle6);                   // new Y to pass on to roll cals 
+            Z3 = legLength2*cos(shoulderAngle6);                  // new Z to pass on to roll calculations
+            Y = legLength2*sin(shoulderAngle6);                   // new Y to pass on to roll calculations
 
-            // **************** Roll calcs ***************************************************
+            // **************** Roll calculations ***************************************************
 
-            roll = ((roll * 71) / 4068)*-1;                       // convert roll to RADIANS
+            roll = degreesToRadians(roll)*-1;                       // convert roll to RADIANS
             differenceZ2 = sin(roll) * BODYRODX;                  // calc opposite side of triangle
             distanceX = cos(roll) * BODYRODX;                     // calc adjacent side of triangle
             
@@ -197,7 +197,7 @@ double leg(double Z4, double Y4, double X4, double yaw, double pitch2, double ro
                 hipHeight = Z3 + differenceZ2;
             }
             
-            differenceX = X3 + (BODYRODX - distanceX);            // diatance from original foot postion and vertical line to shoulder.
+            differenceX = X3 + (BODYRODX - distanceX);            // distance from original foot position and vertical line to shoulder.
 
             if (side == 1) {                                      // *********** switch around for each side of the robot
               differenceX = differenceX*-1;
@@ -215,13 +215,14 @@ double leg(double Z4, double Y4, double X4, double yaw, double pitch2, double ro
               hipAngle6 = hipAngle6 *-1;
             }
                            
-            X = legLength3*sin(hipAngle6);                        // new X to pass onto XYZ calcs        
-            Z = legLength3*cos(hipAngle6);                        // new Z to pass onto XYZ calcs          
-                      
-            
+            X = legLength3*sin(hipAngle6);                        // new X to pass onto XYZ calculations
+            Z = legLength3*cos(hipAngle6);                        // new Z to pass onto XYZ calculations
+
             //************ X & Z axis calc for each leg ***************   
                          
-            if (X == 0) { X = 0.1; }                             // avoid divide by zero
+            if (X == 0) {
+                X = 0.1;
+            }                             // avoid divide by zero
   
             hipAngle1 = atan(X / Z);                             // calc hip angle from vertical
             hipAngle1a = (hipAngle1 * 4068) / 71;
@@ -236,17 +237,19 @@ double leg(double Z4, double Y4, double X4, double yaw, double pitch2, double ro
             hipAngle3 = (hipAngle3a * 71) / 4068;                 // convert to radians
 
             //a2 = b2 + c2 − 2bc cosA            
-            hipActuator =  sqrt( sq(HIPROD3)+sq(HIPROD2) - (2 * HIPROD3 * HIPROD2 * cos(hipAngle3)) )-223;      // work out actuator length relative to mid positon           
+            hipActuator =  sqrt( sq(HIPROD3)+sq(HIPROD2) - (2 * HIPROD3 * HIPROD2 * cos(hipAngle3)) )-223;      // work out actuator length relative to mid position
 
-            //************ Y axis calcs **************
+            //************ Y axis calculations **************
 
-            if (Y == 0) { Y = 0.1; }
+            if (Y == 0) {
+                Y = 0.1;
+            }
             // avoid divide by zero
             shoulderOffset = atan((Y*-1) / legHeight);                // calc shoulder angle offset
             shoulderOffset_a = (shoulderOffset * 4068) / 71;     // covert radians to degrees
             legLength = (Y*-1) / sin(shoulderOffset);                 // calc hypotenuse of triangle to make actual leg length 
             
-            //************ elbow calcs ***************
+            //************ elbow calculations ***************
             
             elbowAngle = acos ( (sq(DIGITLENGTH) + sq(DIGITLENGTH) - sq(legLength)) / (2 * DIGITLENGTH * DIGITLENGTH) );   
             elbowAngle = (elbowAngle * 4068) / 71;                          // convert radians to degrees
@@ -262,7 +265,7 @@ double leg(double Z4, double Y4, double X4, double yaw, double pitch2, double ro
 
             elbowActuator = (((sin(elbowAngle4)) * ELBOWROD)) / sin(elbowAngle2); 
 
-            //************ shoulder calcs **************
+            //************ shoulder calculations **************
             
             shoulderAngle = (180-elbowAngle)/2 + shoulderOffset_a;    // initial demand for shoulder (half elbow angle plus offset for moving the leg)
             shoulderAngle2a = 90-shoulderAngle-SHOULDERANGLE2+SHOULDERANGLE3;      // calc actual angle required from shoulder
@@ -276,148 +279,139 @@ double leg(double Z4, double Y4, double X4, double yaw, double pitch2, double ro
             
             shoulderActuator =  ( (sin(shoulderAngle4)) * SHOULDERROD ) / sin(shoulderAngle2); 
 
-            
+            //********************** output variables *********************************************
 
-           // ********************** output variables *********************************************                
-
-              if (side == 1 && front == 1) {                     // front right leg
+            if (side == 1 && front == 1) {                     // front right leg
                 mydata_front.hipR = hipActuator;
                 mydata_front.shoulderR = shoulderActuator;
                 mydata_front.elbowR = elbowActuator;
-             
-              }                             
-              else if (side == 1 && front == 0) {               // back right leg
-                mydata_back.hipR = hipActuator; 
-                mydata_back.shoulderR = shoulderActuator;             
-                mydata_back.elbowR = elbowActuator; 
-            
-              }              
-              else if (side == 0 && front  == 1) {              // front right leg
+            } else if (side == 1 && front == 0) {               // back right leg
+                mydata_back.hipR = hipActuator;
+                mydata_back.shoulderR = shoulderActuator;
+                mydata_back.elbowR = elbowActuator;
+            } else if (side == 0 && front  == 1) {              // front right leg
                 mydata_front.hipL = hipActuator;
                 mydata_front.shoulderL = shoulderActuator;
                 mydata_front.elbowL = elbowActuator;
-            
-              }               
-              else if (side == 0 && front == 0) {               // back right leg
-                mydata_back.hipL = hipActuator; 
-                mydata_back.shoulderL = shoulderActuator;             
-                mydata_back.elbowL = elbowActuator; 
-              
-              } 
+            } else if (side == 0 && front == 0) {               // back right leg
+                mydata_back.hipL = hipActuator;
+                mydata_back.shoulderL = shoulderActuator;
+                mydata_back.elbowL = elbowActuator;
+            }
 
-              // constrain data so we don't run the actuator end stops
+            // constrain data so we don't run the actuator end stops
+            mydata_front.shoulderR = constrain(mydata_front.shoulderR, 110,200);
+            mydata_front.shoulderL = constrain(mydata_front.shoulderL, 110,200);
+            mydata_front.elbowR = constrain(mydata_front.elbowR,110,200);
+            mydata_front.elbowL = constrain(mydata_front.elbowL, 110,200);
+            mydata_front.hipR = constrain(mydata_front.hipR, -35,35);
+            mydata_front.hipL = constrain(mydata_front.hipL, -35,35);
 
-              mydata_front.shoulderR = constrain(mydata_front.shoulderR, 110,200);
-              mydata_front.shoulderL = constrain(mydata_front.shoulderL, 110,200);
-              mydata_front.elbowR = constrain(mydata_front.elbowR,110,200);
-              mydata_front.elbowL = constrain(mydata_front.elbowL, 110,200);
-              mydata_front.hipR = constrain(mydata_front.hipR, -35,35);
-              mydata_front.hipL = constrain(mydata_front.hipL, -35,35);
+            mydata_back.shoulderR = constrain(mydata_back.shoulderR, 110,200);
+            mydata_back.shoulderL = constrain(mydata_back.shoulderL, 110,200);
+            mydata_back.elbowR = constrain(mydata_back.elbowR, 110,200);
+            mydata_back.elbowL = constrain(mydata_back.elbowL, 110,200);
+            mydata_back.hipR = constrain(mydata_back.hipR, -35,35);
+            mydata_back.hipL = constrain(mydata_back.hipL, -35,35);
 
-              mydata_back.shoulderR = constrain(mydata_back.shoulderR, 110,200);
-              mydata_back.shoulderL = constrain(mydata_back.shoulderL, 110,200);
-              mydata_back.elbowR = constrain(mydata_back.elbowR, 110,200);
-              mydata_back.elbowL = constrain(mydata_back.elbowL, 110,200);
-              mydata_back.hipR = constrain(mydata_back.hipR, -35,35);
-              mydata_back.hipL = constrain(mydata_back.hipL, -35,35);
+            // work out the encoder counts per mm
+            mydata_front_count.hipR = mydata_front.hipR * 3490;
+            mydata_front_count.hipL = mydata_front.hipL * 3490;
+            mydata_front_count.shoulderR = mydata_front.shoulderR * 3490;
+            mydata_front_count.shoulderL = mydata_front.shoulderL * 3490;
+            mydata_front_count.elbowR = mydata_front.elbowR * 3490;
+            mydata_front_count.elbowL = mydata_front.elbowL * 3490;
 
-              // work out the encoder counts per mm
+            mydata_back_count.hipR = mydata_back.hipR * 3490;
+            mydata_back_count.hipL = mydata_back.hipL * 3490;
+            mydata_back_count.shoulderR = mydata_back.shoulderR * 3490;
+            mydata_back_count.shoulderL = mydata_back.shoulderL * 3490;
+            mydata_back_count.elbowR = mydata_back.elbowR * 3490;
+            mydata_back_count.elbowL = mydata_back.elbowL * 3490;
 
-              mydata_front_count.hipR = mydata_front.hipR * 3490;
-              mydata_front_count.hipL = mydata_front.hipL * 3490;
-              mydata_front_count.shoulderR = mydata_front.shoulderR * 3490;
-              mydata_front_count.shoulderL = mydata_front.shoulderL * 3490;
-              mydata_front_count.elbowR = mydata_front.elbowR * 3490;
-              mydata_front_count.elbowL = mydata_front.elbowL * 3490;
+            // remove the number of counts that represent the physical position of the actuator switch / zero position.
+            mydata_front_count_corr.hipR =  mydata_front_count.hipR; // no offset to remove
+            mydata_front_count_corr.hipL =  mydata_front_count.hipL; // no offset to remove
+            mydata_front_count_corr.shoulderR = 0 - (715450 - mydata_front_count.shoulderR);
+            mydata_front_count_corr.shoulderL = 0 - (715450 - mydata_front_count.shoulderL);
+            mydata_front_count_corr.elbowR = 0 - (715450 - mydata_front_count.elbowR);
+            mydata_front_count_corr.elbowL = 0 - (715450 - mydata_front_count.elbowL);
 
-              mydata_back_count.hipR = mydata_back.hipR * 3490;
-              mydata_back_count.hipL = mydata_back.hipL * 3490;
-              mydata_back_count.shoulderR = mydata_back.shoulderR * 3490;
-              mydata_back_count.shoulderL = mydata_back.shoulderL * 3490;
-              mydata_back_count.elbowR = mydata_back.elbowR * 3490;
-              mydata_back_count.elbowL = mydata_back.elbowL * 3490;
-          
-              // remove the number of counts that represent the physical position of the actuator switch / zero position.
+            mydata_back_count_corr.hipR =  mydata_back_count.hipR; // no offset to remove
+            mydata_back_count_corr.hipL =  mydata_back_count.hipL; // no offset to remove
+            mydata_back_count_corr.shoulderR = 0 - (715450 - mydata_back_count.shoulderR);
+            mydata_back_count_corr.shoulderL = 0 - (715450 - mydata_back_count.shoulderL);
+            mydata_back_count_corr.elbowR = 0 - (715450 - mydata_back_count.elbowR);
+            mydata_back_count_corr.elbowL = 0 - (715450 - mydata_back_count.elbowL);
 
-              mydata_front_count_corr.hipR =  mydata_front_count.hipR; // no offset to remove
-              mydata_front_count_corr.hipL =  mydata_front_count.hipL; // no offset to remove
-              mydata_front_count_corr.shoulderR = 0 - (715450 - mydata_front_count.shoulderR);
-              mydata_front_count_corr.shoulderL = 0 - (715450 - mydata_front_count.shoulderL);
-              mydata_front_count_corr.elbowR = 0 - (715450 - mydata_front_count.elbowR);
-              mydata_front_count_corr.elbowL = 0 - (715450 - mydata_front_count.elbowL);
+            // filter final position values
+            mydata_front_filtered.hipR = filter(mydata_front_count_corr.hipR, mydata_front_filtered.hipR);
+            mydata_front_filtered.hipL = filter(mydata_front_count_corr.hipL, mydata_front_filtered.hipL);
+            mydata_front_filtered.shoulderR = filter(mydata_front_count_corr.shoulderR, mydata_front_filtered.shoulderR);
+            mydata_front_filtered.shoulderL = filter(mydata_front_count_corr.shoulderL, mydata_front_filtered.shoulderL);
+            mydata_front_filtered.elbowR = filter(mydata_front_count_corr.elbowR, mydata_front_filtered.elbowR);
+            mydata_front_filtered.elbowL = filter(mydata_front_count_corr.elbowL, mydata_front_filtered.elbowL);
 
-              mydata_back_count_corr.hipR =  mydata_back_count.hipR; // no offset to remove
-              mydata_back_count_corr.hipL =  mydata_back_count.hipL; // no offset to remove
-              mydata_back_count_corr.shoulderR = 0 - (715450 - mydata_back_count.shoulderR);
-              mydata_back_count_corr.shoulderL = 0 - (715450 - mydata_back_count.shoulderL);
-              mydata_back_count_corr.elbowR = 0 - (715450 - mydata_back_count.elbowR);
-              mydata_back_count_corr.elbowL = 0 - (715450 - mydata_back_count.elbowL);   
+            mydata_back_filtered.hipR = filter(mydata_back_count_corr.hipR, mydata_back_filtered.hipR);
+            mydata_back_filtered.hipL = filter(mydata_back_count_corr.hipL, mydata_back_filtered.hipL);
+            mydata_back_filtered.shoulderR = filter(mydata_back_count_corr.shoulderR, mydata_back_filtered.shoulderR);
+            mydata_back_filtered.shoulderL = filter(mydata_back_count_corr.shoulderL, mydata_back_filtered.shoulderL);
+            mydata_back_filtered.elbowR = filter(mydata_back_count_corr.elbowR, mydata_back_filtered.elbowR);
+            mydata_back_filtered.elbowL = filter(mydata_back_count_corr.elbowL, mydata_back_filtered.elbowL);
 
-              // filter final position values
-              
-              mydata_front_filtered.hipR = filter(mydata_front_count_corr.hipR, mydata_front_filtered.hipR);
-              mydata_front_filtered.hipL = filter(mydata_front_count_corr.hipL, mydata_front_filtered.hipL);              
-              mydata_front_filtered.shoulderR = filter(mydata_front_count_corr.shoulderR, mydata_front_filtered.shoulderR);
-              mydata_front_filtered.shoulderL = filter(mydata_front_count_corr.shoulderL, mydata_front_filtered.shoulderL);
-              mydata_front_filtered.elbowR = filter(mydata_front_count_corr.elbowR, mydata_front_filtered.elbowR);
-              mydata_front_filtered.elbowL = filter(mydata_front_count_corr.elbowL, mydata_front_filtered.elbowL);
+            // write data to ODrives
 
-              mydata_back_filtered.hipR = filter(mydata_back_count_corr.hipR, mydata_back_filtered.hipR);
-              mydata_back_filtered.hipL = filter(mydata_back_count_corr.hipL, mydata_back_filtered.hipL);              
-              mydata_back_filtered.shoulderR = filter(mydata_back_count_corr.shoulderR, mydata_back_filtered.shoulderR);
-              mydata_back_filtered.shoulderL = filter(mydata_back_count_corr.shoulderL, mydata_back_filtered.shoulderL);
-              mydata_back_filtered.elbowR = filter(mydata_back_count_corr.elbowR, mydata_back_filtered.elbowR);
-              mydata_back_filtered.elbowL = filter(mydata_back_count_corr.elbowL, mydata_back_filtered.elbowL);
+            if(startupFlag == 0) {
+                previousStartupmillis = currentMillis;  // start filter settling timer
 
-              // write data to ODrives              
+                // Front
+                Serial1 << "w axis" << 0 << ".controller.config.vel_limit " << 220000.0f << '\n';   // Front Shoulder R
+                Serial1 << "w axis" << 1 << ".controller.config.vel_limit " << 220000.0f << '\n';  // Front Elbow R
+                Serial2 << "w axis" << 0 << ".controller.config.vel_limit " << 220000.0f << '\n';  // Front Shoulder L
+                Serial2 << "w axis" << 1 << ".controller.config.vel_limit " << 220000.0f << '\n';  // Front Elbow L
+                Serial3 << "w axis" << 0 << ".controller.config.vel_limit " << 200000.0f << '\n';  // Front Undercarriage L
+                Serial3 << "w axis" << 1 << ".controller.config.vel_limit " << 200000.0f << '\n';  // Front Undercarriage R
+                // Back
+                Serial4 << "w axis" << 0 << ".controller.config.vel_limit " << 220000.0f << '\n';  // Back Shoulder R
+                Serial4 << "w axis" << 1 << ".controller.config.vel_limit " << 220000.0f << '\n';  // Back Elbow R
+                Serial5 << "w axis" << 0 << ".controller.config.vel_limit " << 220000.0f << '\n';  // Back Shoulder L
+                Serial5 << "w axis" << 1 << ".controller.config.vel_limit " << 220000.0f << '\n';  // Back Elbow L
+                Serial6 << "w axis" << 0 << ".controller.config.vel_limit " << 220000.0f << '\n';  // Back undercarriage L
+                Serial6 << "w axis" << 1 << ".controller.config.vel_limit " << 220000.0f << '\n';  // Back undercarriage R
 
-              if(startupFlag == 0) {
-                    previousStartupmillis = currentMillis;  // start filter settling timer 
+                startupFlag = 1; // only do the stuff above once!
+            }
 
-                    // Front
-                    Serial1 << "w axis" << 0 << ".controller.config.vel_limit " << 220000.0f << '\n';   // Front Shoulder R
-                    Serial1 << "w axis" << 1 << ".controller.config.vel_limit " << 220000.0f << '\n';  // Front Elbow R
-                    Serial2 << "w axis" << 0 << ".controller.config.vel_limit " << 220000.0f << '\n';  // Front Shoulder L
-                    Serial2 << "w axis" << 1 << ".controller.config.vel_limit " << 220000.0f << '\n';  // Front ELbow L     
-                    Serial3 << "w axis" << 0 << ".controller.config.vel_limit " << 200000.0f << '\n';  // Front Undercarriage L
-                    Serial3 << "w axis" << 1 << ".controller.config.vel_limit " << 200000.0f << '\n';  // Front Undercarriage R
-                    // Back
-                    Serial4 << "w axis" << 0 << ".controller.config.vel_limit " << 220000.0f << '\n';  // Back Shoulder R
-                    Serial4 << "w axis" << 1 << ".controller.config.vel_limit " << 220000.0f << '\n';  // Back Elbow R
-                    Serial5 << "w axis" << 0 << ".controller.config.vel_limit " << 220000.0f << '\n';  // Back Shoulder L
-                    Serial5 << "w axis" << 1 << ".controller.config.vel_limit " << 220000.0f << '\n';  // Back Elbow L    
-                    Serial6 << "w axis" << 0 << ".controller.config.vel_limit " << 220000.0f << '\n';  // Back undercarriage L
-                    Serial6 << "w axis" << 1 << ".controller.config.vel_limit " << 220000.0f << '\n';  // Back undercarriage R                        
+            if (currentMillis - previousStartupmillis > 3000) {   // makes sure filter has settled the first time
 
-                    startupFlag = 1; // only do the stuff above once!
-              }
+                odrive1.SetPosition(0, mydata_front_filtered.shoulderR);     // output position to actuator
+                odrive1.SetPosition(1, mydata_front_filtered.elbowR);        // output position to actuator
+                odrive2.SetPosition(0, mydata_front_filtered.shoulderL);     // output position to actuator
+                odrive2.SetPosition(1, mydata_front_filtered.elbowL);        // output position to actuator
+                odrive3.SetPosition(0, mydata_front_filtered.hipL);          // output position to actuator
+                odrive3.SetPosition(1, mydata_front_filtered.hipR);          // output position to actuator
 
-              if (currentMillis - previousStartupmillis > 3000) {   // makes sure filter has settled the first time
-                        
-                    odrive1.SetPosition(0, mydata_front_filtered.shoulderR);     // output position to actuator                               
-                    odrive1.SetPosition(1, mydata_front_filtered.elbowR);        // output position to actuator
-                    odrive2.SetPosition(0, mydata_front_filtered.shoulderL);     // output position to actuator
-                    odrive2.SetPosition(1, mydata_front_filtered.elbowL);        // output position to actuator
-                    odrive3.SetPosition(0, mydata_front_filtered.hipL);          // output position to actuator
-                    odrive3.SetPosition(1, mydata_front_filtered.hipR);          // output position to actuator
+                odrive4.SetPosition(0, mydata_back_filtered.shoulderR);     // output position to actuator
+                odrive4.SetPosition(1, mydata_back_filtered.elbowR);        // output position to actuator
+                odrive5.SetPosition(0, mydata_back_filtered.shoulderL);     // output position to actuator
+                odrive5.SetPosition(1, mydata_back_filtered.elbowL);        // output position to actuator
+                odrive6.SetPosition(0, mydata_back_filtered.hipL);          // output position to actuator
+                odrive6.SetPosition(1, mydata_back_filtered.hipR);          // output position to actuator
 
-                    odrive4.SetPosition(0, mydata_back_filtered.shoulderR);     // output position to actuator
-                    odrive4.SetPosition(1, mydata_back_filtered.elbowR);        // output position to actuator
-                    odrive5.SetPosition(0, mydata_back_filtered.shoulderL);     // output position to actuator
-                    odrive5.SetPosition(1, mydata_back_filtered.elbowL);        // output position to actuator
-                    odrive6.SetPosition(0, mydata_back_filtered.hipL);          // output position to actuator
-                    odrive6.SetPosition(1, mydata_back_filtered.hipR);          // output position to actuator  
+            }     
 
-              }     
-
-}   // end of leg fuction
+}   // end of leg function
 
 // filter function
-
 long filter(long lengthOrig, long currentValue) {
   int filter = 15;
   long lengthFiltered =  (lengthOrig + (currentValue * filter)) / (filter + 1);
   return lengthFiltered;  
+}
+
+// converts degrees to radians
+double degreesToRadians(double degrees) {
+    return (degrees * 71) / 4068;
 }
 
             
