@@ -5,12 +5,12 @@ double leg(double Z4, double Y4, double X4, double yaw, double pitch2, double ro
   
             // ************* XYZ consts and vars *****************************************************************
             #define HIPROD 118L           // offset from hip pivot to middle of leg
-            #define HIPROD2 263L          // diagonal length from hip pivot to fixed actuator pivot 
-            #define HIPROD3 150L          // length of hip actuator pivot 
+            #define HIPROD2 263L          // diagonal length from hip pivot to fixed actuator pivot
+            #define HIPROD3 150L          // length of hip actuator pivot
             #define HIPOFFSETANGLE 32L    // DEGREES angle of diagonal between hip pivot and actuator pivot
             double X;                     // X once offsets and inversion are taken ito account
             double X2;                    // X after yaw moves;
-            double X3;                    // X at the roll calc stage  
+            double X3;                    // X at the roll calc stage
             double Y;                     // Y to give to XYZ calculations
             double Y2;                    // Y after yaw moves
             double Z;                     // Z to give to XYZ calculations
@@ -25,15 +25,15 @@ double leg(double Z4, double Y4, double X4, double yaw, double pitch2, double ro
             double hipAngle3a;            // DEGREES - angle required from actual actuator
             double hipActuator;           // output length of ball screw
             double legHeight;             // height of leg in the 'sideways tilting plane'
-  
+
             double shoulderOffset;        // RADIANS - offset angle to move the actual shoulder by, large angle moves the leg forward
             double shoulderOffset_a;       // DEGREES - offset angle to move the actual shoulder by, large angle moves the leg forward
-            double legLength;              
-         
+            double legLength;
+
             #define DIGITLENGTH 363L    // length of each top/bottom leg
             #define ELBOWROD 190L       // length of push rod
             #define ELBOWROD2 95L        // other side of push rod triangle
-            #define ELBOWACTANGLE 15.8L   // angle between actuator and upper leg joint            
+            #define ELBOWACTANGLE 15.8L   // angle between actuator and upper leg joint
             double elbowAngle;           // the actual angle of the elbow between top and bottom sections
             double elbowAngle2;          // angle between bottom of leg and actuator
             double elbowAngle2a;          // angle between bottom of leg and actuator
@@ -59,7 +59,7 @@ double leg(double Z4, double Y4, double X4, double yaw, double pitch2, double ro
             // **************** Pitch Roll Yaw consts and vars **********************************************
 
             //  Pitch consts and vars - side view
-            #define BODYRODY 287L      // half the distance from shoulder to shoulder on the Y side plane/view   
+            #define BODYRODY 287L      // half the distance from shoulder to shoulder on the Y side plane/view
             double pitch;             // pitch after switching around for front/back of robot
             double differenceZ;         // difference in height between center point and new shoulder height, in Y axis
             double shoulderHeight;    // resulting new height of shoulder from ground as body tilts in pitch, in a vertical axis from the ground
@@ -87,8 +87,8 @@ double leg(double Z4, double Y4, double X4, double yaw, double pitch2, double ro
             double radius;            // radius/hypotenuse of triangle of leg from top XY view
             double yawAngle1;         // RADIANS - the origin angle of the radius using existing stick positions
             double yawAngle1a;        // DEGREES - the origin angle of the radius using existing stick positions
-            double yawAngle2;         // RADIANS - the new demand angle of the radius 
-            double yawAngle2a;        // DEGREES - the new demand angle of the radius 
+            double yawAngle2;         // RADIANS - the new demand angle of the radius
+            double yawAngle2a;        // DEGREES - the new demand angle of the radius
 
             // ******************* Interpolate values ********************
 
@@ -126,7 +126,7 @@ double leg(double Z4, double Y4, double X4, double yaw, double pitch2, double ro
 
             X2 = radius * sin(yawAngle2);           // calc new X and Y based on new yaw angle
             Y2 = radius * cos(yawAngle2);
-  
+
             if (front == 1) {                       // remove offsets again to give results centred around zero
               Y2 = Y2 - BODYRODY;
             } else if (front == 0) {
@@ -137,15 +137,15 @@ double leg(double Z4, double Y4, double X4, double yaw, double pitch2, double ro
               X2 = X2 - (BODYRODX + HIPROD);
             } else if (side == 0){
               X2 = X2 + (BODYRODX + HIPROD);
-            }   
+            }
 
             Z2 = Z4;                              // pass through Z as it isn't needed in yaw calculations
-                     
+
             // switch round X and roll for each side of the robot
             if (side == 1) {                                      //right leg
-              X3 = HIPROD+X2;                                       
+              X3 = HIPROD+X2;
             } else if (side == 0) {                                 //left leg
-              X3 = HIPROD-X2; 
+              X3 = HIPROD-X2;
             }
 
             // switch around pitch angle for back or front of robot
@@ -153,7 +153,7 @@ double leg(double Z4, double Y4, double X4, double yaw, double pitch2, double ro
               pitch = pitch2*-1;
             } else if (front == 0) {                                // back of robot
               pitch = pitch2;
-            }            
+            }
 
             // **************** Pitch calculations **********************************************
 
@@ -171,7 +171,7 @@ double leg(double Z4, double Y4, double X4, double yaw, double pitch2, double ro
             shoulderAngle5 = atan(differenceY/shoulderHeight);    // RADIANS angle between leg and vertical
             shoulderAngle5a = radiansToDegrees(shoulderAngle5);      // DEGREES convert for debug
             legLength2 = shoulderHeight/cos(shoulderAngle5);      // calc out new length of leg
-            
+
             shoulderAngle6 = pitch+shoulderAngle5;               // RADIANS calc angle for new Z to 90' from body
 
             if (front == 1) {                                    // switch around the data if it's the front of the robot
@@ -188,7 +188,7 @@ double leg(double Z4, double Y4, double X4, double yaw, double pitch2, double ro
             roll = degreesToRadians(roll)*-1;                       // convert roll to RADIANS
             differenceZ2 = sin(roll) * BODYRODX;                  // calc opposite side of triangle
             distanceX = cos(roll) * BODYRODX;                     // calc adjacent side of triangle
-            
+
             if (side == 0) {                                      // *********** switch around for each side of the robot
                 hipHeight = Z3 - differenceZ2;                    // new height of the hip from the ground taking into account roll
             }
@@ -196,34 +196,34 @@ double leg(double Z4, double Y4, double X4, double yaw, double pitch2, double ro
             if (side == 1) {
                 hipHeight = Z3 + differenceZ2;
             }
-            
+
             differenceX = X3 + (BODYRODX - distanceX);            // distance from original foot position and vertical line to shoulder.
 
             if (side == 1) {                                      // *********** switch around for each side of the robot
               differenceX = differenceX*-1;
-            }        
+            }
 
             hipAngle5 = atan(differenceX/hipHeight);              // RADIANS angle between *virtual* leg and vertical
             hipAngle5a = radiansToDegrees(hipAngle5);                 // DEGREES convert for debug
-           
+
             legLength3 = hipHeight/cos(hipAngle5);                // calc new *virtual leg* length
 
             hipAngle6 = roll+hipAngle5;                          // RADIANS calc angle for new Z to 90' from body
             hipAngle6a = radiansToDegrees(hipAngle6);                // DEGREES convert for debug
-       
+
             if (side == 1) {                                     // *********** switch around for each side of the robot
               hipAngle6 = hipAngle6 *-1;
             }
-                           
+
             X = legLength3*sin(hipAngle6);                        // new X to pass onto XYZ calculations
             Z = legLength3*cos(hipAngle6);                        // new Z to pass onto XYZ calculations
 
-            //************ X & Z axis calc for each leg ***************   
-                         
+            //************ X & Z axis calc for each leg ***************
+
             if (X == 0) {
                 X = 0.1;
             }                             // avoid divide by zero
-  
+
             hipAngle1 = atan(X / Z);                             // calc hip angle from vertical
             hipAngle1a = radiansToDegrees(hipAngle1);           // DEGREES convert for debug
             hipHypotenuse = X / sin(hipAngle1);                  // calc distance from hip pivot to foot
@@ -236,7 +236,7 @@ double leg(double Z4, double Y4, double X4, double yaw, double pitch2, double ro
             hipAngle3a = (90 - HIPOFFSETANGLE) + (hipAngle1a + (180-90-hipAngle2a)) -90 ;        // DEGREES - angle required from actuator
             hipAngle3 = degressToRadians(hipAngle3a);                 // convert to radians
 
-            //a2 = b2 + c2 − 2bc cosA            
+            //a2 = b2 + c2 − 2bc cosA
             hipActuator =  sqrt( sq(HIPROD3)+sq(HIPROD2) - (2 * HIPROD3 * HIPROD2 * cos(hipAngle3)) )-223;      // work out actuator length relative to mid position
 
             //************ Y axis calculations **************
@@ -248,26 +248,26 @@ double leg(double Z4, double Y4, double X4, double yaw, double pitch2, double ro
             // avoid divide by zero
             shoulderOffset = atan((Y*-1) / legHeight);                // calc shoulder angle offset
             shoulderOffset_a = radiansToDegrees(shoulderOffset);     // covert radians to degrees
-            legLength = (Y*-1) / sin(shoulderOffset);                 // calc hypotenuse of triangle to make actual leg length 
-            
+            legLength = (Y*-1) / sin(shoulderOffset);                 // calc hypotenuse of triangle to make actual leg length
+
             //************ elbow calculations ***************
-            
-            elbowAngle = acos ( (sq(DIGITLENGTH) + sq(DIGITLENGTH) - sq(legLength)) / (2 * DIGITLENGTH * DIGITLENGTH) );   
+
+            elbowAngle = acos ( (sq(DIGITLENGTH) + sq(DIGITLENGTH) - sq(legLength)) / (2 * DIGITLENGTH * DIGITLENGTH) );
             elbowAngle = radiansToDegrees(elbowAngle);                          // convert radians to degrees
 
-            elbowAngle2a = elbowAngle - ELBOWACTANGLE;                       // take away known angle        
+            elbowAngle2a = elbowAngle - ELBOWACTANGLE;                       // take away known angle
             elbowAngle2 = degreesToRadians(elbowAngle2a);                        // convert degrees to radians
 
             elbowAngle3 = asin ( (ELBOWROD2 * sin(elbowAngle2)/ELBOWROD));
             elbowAngle3a = radiansToDegrees(elbowAngle3);                        // convert radians to degrees
 
-            elbowAngle4a = 180 - elbowAngle2a - elbowAngle3a;                  // we now know all four angles        
+            elbowAngle4a = 180 - elbowAngle2a - elbowAngle3a;                  // we now know all four angles
             elbowAngle4 = degreesToRadians(elbowAngle4a);                        // convert degrees to radians
 
-            elbowActuator = (((sin(elbowAngle4)) * ELBOWROD)) / sin(elbowAngle2); 
+            elbowActuator = (((sin(elbowAngle4)) * ELBOWROD)) / sin(elbowAngle2);
 
             //************ shoulder calculations **************
-            
+
             shoulderAngle = (180-elbowAngle)/2 + shoulderOffset_a;    // initial demand for shoulder (half elbow angle plus offset for moving the leg)
             shoulderAngle2a = 90-shoulderAngle-SHOULDERANGLE2+SHOULDERANGLE3;      // calc actual angle required from shoulder
             shoulderAngle2 = degreesToRadians(shoulderAngle2a);                        // convert degrees to radians
@@ -277,8 +277,8 @@ double leg(double Z4, double Y4, double X4, double yaw, double pitch2, double ro
 
             shoulderAngle4a = 180 - shoulderAngle2a - shoulderAngle3a;             // calc out remaining angle
             shoulderAngle4 = degreesToRadians(shoulderAngle4a);                     // convert degrees to radians
-            
-            shoulderActuator =  ( (sin(shoulderAngle4)) * SHOULDERROD ) / sin(shoulderAngle2); 
+
+            shoulderActuator =  ( (sin(shoulderAngle4)) * SHOULDERROD ) / sin(shoulderAngle2);
 
             //********************** output variables *********************************************
 
@@ -384,7 +384,6 @@ double leg(double Z4, double Y4, double X4, double yaw, double pitch2, double ro
             }
 
             if (currentMillis - previousStartupmillis > 3000) {   // makes sure filter has settled the first time
-
                 odrive1.SetPosition(0, mydata_front_filtered.shoulderR);     // output position to actuator
                 odrive1.SetPosition(1, mydata_front_filtered.elbowR);        // output position to actuator
                 odrive2.SetPosition(0, mydata_front_filtered.shoulderL);     // output position to actuator
@@ -398,7 +397,6 @@ double leg(double Z4, double Y4, double X4, double yaw, double pitch2, double ro
                 odrive5.SetPosition(1, mydata_back_filtered.elbowL);        // output position to actuator
                 odrive6.SetPosition(0, mydata_back_filtered.hipL);          // output position to actuator
                 odrive6.SetPosition(1, mydata_back_filtered.hipR);          // output position to actuator
-
             }
 
 }   // end of leg function
@@ -415,6 +413,7 @@ double degreesToRadians(double degrees) {
     return (degrees * 71) / 4068;
 }
 
+// converts radians to degrees
 double radiansToDegrees(double radians) {
     return (radians * 4068) / 71;
 }
